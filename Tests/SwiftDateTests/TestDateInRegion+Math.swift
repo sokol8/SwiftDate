@@ -93,6 +93,10 @@ class TestDateInRegion_Math: XCTestCase {
 		// TEST #6
 		let finalDate5 = (date1 + [Calendar.Component.day: 20, Calendar.Component.hour: 10]).toFormat(dateFormat)
 		XCTAssert( (finalDate5 == "2017-08-11 10:00:00"), "Failed to add components dict and get the exact final date")
+        
+        // TEST #7
+        let finalDate6 = (date1 - [Calendar.Component.year: 1, Calendar.Component.month: 2, Calendar.Component.day: 3, Calendar.Component.hour: 4]).toFormat(dateFormat)
+        XCTAssert( (finalDate6 == "2016-05-18 20:00:00"), "Failed to substract components dict and get exact final date" )
 
 	}
 
