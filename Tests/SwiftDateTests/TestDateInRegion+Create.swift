@@ -263,4 +263,60 @@ class TestDateInRegion_Create: XCTestCase {
 		}
 		return true
 	}
+    
+    func testDateInRegion_DateAt() {
+        let regionRome = Region(calendar: Calendars.gregorian, zone: Zones.europeRome, locale: Locales.italian)
+        let dateFormat = "yyyy-MM-dd HH:mm:ss"
+        let date1 = DateInRegion("2017-07-22 10:54:32", format: dateFormat, region: regionRome)!
+        
+        // .tomorrow
+        let finalDate1 = date1.dateAt(.tomorrow).toFormat(dateFormat)
+        XCTAssert( (finalDate1 == "2017-07-23 10:54:32"), "Failed to create date at .tomorrow")
+        
+        // .tomorrowAtStart
+        let finalDate2 = date1.dateAt(.tomorrowAtStart).toFormat(dateFormat)
+        XCTAssert( (finalDate2 == "2017-07-23 00:00:00"), "Failed to create date at .tomorrowAtStart")
+        
+        // .yesterday
+        let finalDate3 = date1.dateAt(.yesterday).toFormat(dateFormat)
+        XCTAssert( (finalDate3 == "2017-07-21 10:54:32"), "Failed to create date at .yesterday")
+        
+        // .yesterdayAtStart
+        let finalDate4 = date1.dateAt(.yesterdayAtStart).toFormat(dateFormat)
+        XCTAssert( (finalDate4 == "2017-07-21 00:00:00"), "Failed to create date at .yesterdayAtStart")
+        
+        // .nearestMinute(minute:Int)
+        let finalDate5 = date1.dateAt(.nearestMinute(minute:10)).toFormat(dateFormat)
+        XCTAssert( (finalDate5 == "2017-07-22 10:50:32"), "Failed to create date at .nearestMinute(minute:Int)")
+        
+        let finalDate6 = date1.dateAt(.nearestMinute(minute:30)).toFormat(dateFormat)
+        XCTAssert( (finalDate6 == "2017-07-22 11:00:32"), "Failed to create date at .nearestMinute(minute:Int)")
+        
+        // .nearestHour(hour:Int)
+        let finalDate7 = date1.dateAt(.nearestHour(hour:14)).toFormat(dateFormat)
+        XCTAssert( (finalDate7 == "2017-07-22 14:00:32"), "Failed to create date at .nearestMinute(minute:Int)")
+        
+        // TEST #1 - nextWeekday(_: WeekDay)
+        let fromDate1 = DateInRegion("2018-08-19 07:00:00", format: dateFormat, region: regionRome)!
+        let expectedDates1 = [
+            "2018-08-20 06:00:00",
+            "2018-08-21 06:00:00",
+            "2018-08-22 06:00:00",
+            "2018-08-23 06:00:00",
+            "2018-08-24 06:00:00",
+            "2018-08-25 06:00:00",
+            "2018-08-26 06:00:00",
+            ]
+        let weekdays = [WeekDay.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
+
+        weekdays.enumerated().forEach {
+            let nextWeekday = fromDate1.dateAt(.nextWeekday($0.element)).toFormat(dateFormat)
+            XCTAssert( (nextWeekday == expectedDates1[$0.offset]), "Failed to create date at nextWeekday(_: WeekDay)")
+        }
+        
+        // TEST #2 - nextWeekday(_: WeekDay)
+        let fromDate2 = DateInRegion("2018-08-19 01:00:00", format: dateFormat, region: regionRome)!
+        let nextWeekday2 = fromDate2.dateAt(.nextWeekday(.sunday)).toFormat(dateFormat)
+        XCTAssert( (nextWeekday2 == "2018-08-19 06:00:00"), "Failed to create date at nextWeekday(_: WeekDay)")
+    }
 }
